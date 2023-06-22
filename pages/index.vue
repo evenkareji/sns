@@ -1,6 +1,6 @@
 <template>
   <div v-if="user.uid">
-    <p>{{ user.displayName }}</p>
+    <p class="text-3xl font-bold underline">{{ user.displayName }}</p>
     <Post />
   </div>
   <div v-else>

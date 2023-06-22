@@ -1,12 +1,3 @@
-export default {
-  build: {
-    postcss: {
-      postcssOptions: {
-        plugins: {
-          tailwindcss: {},
-          autoprefixer: {},
-        },
-      },
-    },
-  }
-}
+export default defineNuxtConfig({
+  modules: ['@nuxtjs/tailwindcss'],
+});
