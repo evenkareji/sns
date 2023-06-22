@@ -1,0 +1,15 @@
+{
+  "@vite/client": {
+    "isEntry": true,
+    "file": "@vite/client",
+    "css": [],
+    "module": true,
+    "resourceType": "script"
+  },
+  "/Users/IT222289/Desktop/TS_VUE/sns/node_modules/nuxt/dist/app/entry.js": {
+    "resourceType": "script",
+    "module": true,
+    "isEntry": true,
+    "file": "/Users/IT222289/Desktop/TS_VUE/sns/node_modules/nuxt/dist/app/entry.js"
+  }
+}
