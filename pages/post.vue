@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { collection, addDoc, onSnapshot, serverTimestamp ,query,where,getDocs,setDoc,doc} from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+} from 'firebase/firestore';
 import { db } from '../src/plugins/firebase';
 import { ref } from 'vue';
 import { getAuth, signOut } from 'firebase/auth';
@@ -26,7 +36,7 @@ type Post = {
 
 let auth: any;
 onMounted(() => {
-  console.log(user.uid)
+  console.log(user.uid);
   auth = getAuth();
   console.log(auth, 'post.vue auth');
   console.log(user.value, 'post.vue');
@@ -35,9 +45,9 @@ onMounted(() => {
   onSnapshot(collection(db, 'posts'), (querySnapshot) => {
     posts.value = [];
     querySnapshot.forEach((doc) => {
-      console.log(doc.data().uid,)
+      console.log(doc.data().uid);
       // const post: Post = {
-        // displayName: doc.data().displayName,
+      // displayName: doc.data().displayName,
       //   uid: doc.data().uid,
       //   desc: doc.data().desc,
       //   company: doc.data().company,
@@ -57,7 +67,7 @@ onMounted(() => {
       };
 
       posts.value.push(post);
-      console.log(posts.value)
+      console.log(posts.value);
       // console.log(posts.value[0].timestamp.seconds)
     });
   });
@@ -91,29 +101,28 @@ const addFirebase = (
   setDoc(ref, post).then(() => {
     alert('記事を作成しました');
   });
-  console.log(user.value)
+  console.log(user.value);
   inputtingCompany.value = '';
   inputtingOccupation.value = '';
   inputtingThoughts.value = '';
 };
 
 const postDelete = () => {
-  console.log("delete")
-}
+  console.log('delete');
+};
 
 const addLike = (pid: string, uid: string) => {
-  console.log(pid, uid)
+  console.log(pid, uid);
   // const que = query(collection(db, "users"), where("uid", "==", uid))
   onSnapshot(collection(db, 'users'), (querySnapshot: any) => {
     querySnapshot.forEach((doc: any) => {
-      const likes:any = {
-        like: doc.data().likes
-      }
-          console.log(likes)
-    })
-  })
-}
-
+      const likes: any = {
+        like: doc.data().likes,
+      };
+      console.log(likes);
+    });
+  });
+};
 </script>
 
 <template>
@@ -165,17 +174,28 @@ const addLike = (pid: string, uid: string) => {
         <div
           class="rounded-md border-2 border-stone-400 p-5 my-3 text-left"
           v-for="post in posts"
-          :key="post.createdAt" >
+          :key="post.createdAt"
+        >
           <div class="pr-4">名前：{{ post.displayName }}</div>
           <div class="pr-4">会社名：{{ post.company }}</div>
           <div class="pr-4">職種：{{ post.occupation }}</div>
           <div>感想：{{ post.desc }}</div>
           <!-- <div class="">{{post.like.length}}いいね！</div> -->
-          <p><span>UID:{{ user.uid }}・PID:{{ post.id }} PPID:{{ post.authorId }}</span></p>
+          <p>
+            <span
+              >UID:{{ user.uid }}・PID:{{ post.id }} PPID:{{
+                post.authorId
+              }}</span
+            >
+          </p>
           <!-- <p>日時：{{ user.timestamp.seconds }}</p> -->
           <p>投稿日時{{ post.createdAt }}</p>
-          <button v-if="user.uid==post.uid" @click="postDelete()">削除</button>
-          <button @click="addLike(post.authorId,user.uid)" class="border-1	">いいねネ！！</button>
+          <button v-if="user.uid == post.uid" @click="postDelete()">
+            削除
+          </button>
+          <button @click="addLike(post.authorId, user.uid)" class="border-1">
+            いいねネ！！
+          </button>
         </div>
       </div>
     </div>

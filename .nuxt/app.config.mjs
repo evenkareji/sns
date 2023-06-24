@@ -1,5 +1,5 @@
 
-import { defuFn } from '/Users/IT222289/Desktop/TS_VUE/sns/node_modules/defu/dist/defu.mjs'
+import { defuFn } from '/Users/it222282/Desktop/sns/node_modules/defu/dist/defu.mjs'
 
 const inlineConfig = {}
 
