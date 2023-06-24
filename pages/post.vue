@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { collection, addDoc, onSnapshot, serverTimestamp ,query,where,getDocs} from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, serverTimestamp ,query,where,getDocs,setDoc,doc} from 'firebase/firestore';
 import { db } from '../src/plugins/firebase';
 import { ref } from 'vue';
 import { getAuth, signOut } from 'firebase/auth';
@@ -13,14 +13,15 @@ const inputtingOccupation = ref();
 const inputtingThoughts = ref();
 const router = useRouter();
 type Post = {
-  uid: string;
-  displayName: string;
+  // username: string;
+  id: string;
   company: string;
   occupation: string;
   desc: string;
-  timestamp: any,
-  like: any,
-  pid:string
+  createdAt: number;
+  updateAt?: number | null;
+  authorId: string;
+  displayName: string;
 };
 
 let auth: any;
@@ -35,20 +36,29 @@ onMounted(() => {
     posts.value = [];
     querySnapshot.forEach((doc) => {
       console.log(doc.data().uid,)
+      // const post: Post = {
+        // displayName: doc.data().displayName,
+      //   uid: doc.data().uid,
+      //   desc: doc.data().desc,
+      //   company: doc.data().company,
+      //   occupation: doc.data().occupation,
+      //   timestamp:doc.data().timestamp,
+      //   like: doc.data().like,
+      //   pid:doc.data().pid
+      // };
       const post: Post = {
         displayName: doc.data().displayName,
-        uid: doc.data().uid,
+        id: doc.id,
+        authorId: user.value.uid,
         desc: doc.data().desc,
         company: doc.data().company,
+        createdAt: doc.data().createdAt,
         occupation: doc.data().occupation,
-        timestamp:doc.data().timestamp,
-        like: doc.data().like,
-        pid:doc.data().pid
       };
 
       posts.value.push(post);
       console.log(posts.value)
-      console.log(posts.value[0].timestamp.seconds)
+      // console.log(posts.value[0].timestamp.seconds)
     });
   });
 });
@@ -65,14 +75,21 @@ const addFirebase = (
   registerOccupation: string,
   registerThoughts: string,
 ) => {
-  addDoc(collection(db, 'posts'), {
-    ...user.value,
-    occupation: registerOccupation,
+  const ref = doc(collection(db, 'posts'));
+
+  const post = {
+    id: ref.id,
+    displayName: user.value.displayName,
     company: registerCompany,
     desc: registerThoughts,
-    timestamp: serverTimestamp(),
-    like: [],
-    pid: Math.random().toString(32).substring(2)
+    occupation: registerOccupation,
+    createdAt: Date.now(),
+    updateAt: null,
+    authorId: user.value.uid,
+  };
+
+  setDoc(ref, post).then(() => {
+    alert('記事を作成しました');
   });
   console.log(user.value)
   inputtingCompany.value = '';
@@ -148,16 +165,17 @@ const addLike = (pid: string, uid: string) => {
         <div
           class="rounded-md border-2 border-stone-400 p-5 my-3 text-left"
           v-for="post in posts"
-          :key="post.timestamp.seconds">
+          :key="post.createdAt" >
           <div class="pr-4">名前：{{ post.displayName }}</div>
           <div class="pr-4">会社名：{{ post.company }}</div>
           <div class="pr-4">職種：{{ post.occupation }}</div>
           <div>感想：{{ post.desc }}</div>
-          <div class="">{{post.like.length}}いいね！</div>
-          <p><span>UID:{{ user.uid }}・PID:{{ post.uid }} PPID:{{ post.pid }}</span></p>
+          <!-- <div class="">{{post.like.length}}いいね！</div> -->
+          <p><span>UID:{{ user.uid }}・PID:{{ post.id }} PPID:{{ post.authorId }}</span></p>
           <!-- <p>日時：{{ user.timestamp.seconds }}</p> -->
+          <p>投稿日時{{ post.createdAt }}</p>
           <button v-if="user.uid==post.uid" @click="postDelete()">削除</button>
-          <button @click="addLike(post.pid,user.uid)">いいねネ！！</button>
+          <button @click="addLike(post.authorId,user.uid)" class="border-1	">いいねネ！！</button>
         </div>
       </div>
     </div>

@@ -24,21 +24,43 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { doc,setDoc } from "firebase/firestore"
+import { db } from '../src/plugins/firebase';
+const { user } = useUserState();
+
 
 const email = ref();
 const password = ref();
 const errMsg = ref();
 const router = useRouter();
 
+// const signInWithGoogle = () => {
+//   const provider = new GoogleAuthProvider();
+//   signInWithPopup(getAuth(), provider)
+//     .then((result) => {
+//       // router.push('/post');
+//     })
+//     .catch((error) => {});
+// };
 const signInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(getAuth(), provider)
     .then((result) => {
-      // router.push('/post');
+      const ref = doc(db, `users/${user.value.uid}`);
+      const userData = {
+        name: user.value.displayName,
+      };
+      console.log(userData);
+      // refを代入しdocumentのidをセット
+      setDoc(ref, userData).then(() => {
+        alert('userの作成に成功しました');
+      });
     })
-    .catch((error) => {});
+    .catch((error) => {
+      alert(error);
+    });
 };
-const authin = () => {
+const authin = ()=>{
   const auth = getAuth();
   // getAuthによりとってきたpasswordとemailを入力した内容と比較
   signInWithEmailAndPassword(auth, email.value, password.value)

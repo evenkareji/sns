@@ -7,7 +7,7 @@
     <p><button @click="register">Submit</button></p>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import {
   getAuth,
@@ -15,6 +15,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 const { login, user } = useUserState();
 console.log(user.value, 'register');
@@ -26,8 +27,15 @@ const router = useRouter();
 const register = () => {
   createUserWithEmailAndPassword(getAuth(), email.value, password.value)
     .then((data) => {
-      console.log('Succcessfully registered');
-      router.push('/signIn');
+      // documentのidを前もって取得
+      const ref = doc(db, `users/${user.value.uid}`);
+
+      const userData = { name: name.value };
+      // refを代入しdocumentのidをセット
+      setDoc(ref, userData).then(() => {
+        alert('userの作成に成功しました');
+      });
+      router.push('/auth');
     })
     .catch((err) => {
       console.log(err.code);
